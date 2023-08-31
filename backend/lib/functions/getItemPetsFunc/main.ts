@@ -26,7 +26,7 @@ async function getItem(id: string) {
 
 exports.handler = async (event: any) => {
 	// Assuming the id is sent in the body as: { "id": "someValue" }
-	const { id } = JSON.parse(event.body)
+	const id = event.pathParameters?.petId
 
 	if (!id) {
 		return {

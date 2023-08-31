@@ -6,7 +6,7 @@ async function deleteItem(id: string) {
 	const params = {
 		TableName: process.env.PETS_TABLE_NAME,
 		Key: {
-			ID: { S: id }, // Assuming ID is the primary key and is of type string. Adjust if needed.
+			id: { S: id }, // Assuming ID is the primary key and is of type string. Adjust if needed.
 		},
 	}
 
@@ -22,6 +22,7 @@ async function deleteItem(id: string) {
 
 exports.handler = async (event: any) => {
 	// Assuming the ID is sent in the body as: { "id": "someValue" }
+	console.log('Received event:', JSON.parse(event.body))
 	const { id } = JSON.parse(event.body)
 
 	if (!id) {

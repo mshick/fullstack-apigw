@@ -5,7 +5,8 @@ import { IFunction } from 'aws-cdk-lib/aws-lambda'
 type APIGatewayProps = {
 	getAllBaseFunc: IFunction
 	putItemBaseFunc: IFunction
-	deleteItemLeafFunc: IFunction
+	deleteItemBaseFunc: IFunction
+	getItemLeafFunc: IFunction
 	apiName: string
 	baseResourceName: string
 	leafResourceName: string
@@ -40,10 +41,15 @@ export const createCRUDAPIGateway = (
 	// Allow a user to GET all the pets via a Lambda function
 	const getAllBaseIntegration = new LambdaIntegration(props.getAllBaseFunc)
 	const putItemBaseIntegration = new LambdaIntegration(props.putItemBaseFunc)
-	const deleteItemLeafIntegration = new LambdaIntegration(props.putItemBaseFunc)
+	const deleteItemBaseIntegration = new LambdaIntegration(
+		props.deleteItemBaseFunc
+	)
+	const getItemLeafIntegration = new LambdaIntegration(props.getItemLeafFunc)
+
 	baseResource.addMethod('GET', getAllBaseIntegration)
 	baseResource.addMethod('POST', putItemBaseIntegration)
-	baseResource.addMethod('DELETE', deleteItemLeafIntegration)
+	baseResource.addMethod('DELETE', deleteItemBaseIntegration)
+	leafResource.addMethod('GET', getItemLeafIntegration)
 
 	return api
 }

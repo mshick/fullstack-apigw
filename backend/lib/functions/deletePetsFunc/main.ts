@@ -21,24 +21,24 @@ async function deleteItem(id: string) {
 }
 
 exports.handler = async (event: any) => {
-	// Assuming the ID is sent in the body as: { "petId": "someValue" }
-	const { petId } = JSON.parse(event.body)
+	// Assuming the ID is sent in the body as: { "id": "someValue" }
+	const { id } = JSON.parse(event.body)
 
-	if (!petId) {
+	if (!id) {
 		return {
 			statusCode: 400,
 			body: JSON.stringify({
-				message: 'petId is missing in the request body.',
+				message: 'id is missing in the request body.',
 			}),
 		}
 	}
 
-	await deleteItem(petId)
+	await deleteItem(id)
 
 	return {
 		statusCode: 200,
 		body: JSON.stringify({
-			message: `Successfully deleted item with petId: ${petId}`,
+			message: `Successfully deleted item with id: ${id}`,
 		}),
 	}
 }

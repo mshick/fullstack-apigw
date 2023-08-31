@@ -5,17 +5,24 @@ import { createCRUDAPIGateway } from './api/apigateway'
 import { createPetsTable } from './database/petsTable'
 import { createPutPetsFunc } from './functions/putPetsFunc/construct'
 import { createDeletePetsFunc } from './functions/deletePetsFunc/construct'
+import { createGetItemPetsFunc } from './functions/getItemPetsFunc/construct'
 
 export class FullstackApigwStack extends cdk.Stack {
 	constructor(scope: Construct, id: string, props?: cdk.StackProps) {
 		super(scope, id, props)
 
 		const petsTable = createPetsTable(this, {
-			tableName: 'petsTable',
+			tableName: 'petTable',
 		})
 
 		const getPetsFunc = createGetPetsFunc(this, {
 			functionName: 'getPetsFunc',
+			petsTableArn: petsTable.tableArn,
+			enviornmentVars: { petsTableName: petsTable.tableName },
+		})
+
+		const getItemPetsFunc = createGetItemPetsFunc(this, {
+			functionName: 'getItemPetsFunc',
 			petsTableArn: petsTable.tableArn,
 			enviornmentVars: { petsTableName: petsTable.tableName },
 		})
@@ -37,8 +44,9 @@ export class FullstackApigwStack extends cdk.Stack {
 			baseResourceName: 'pets',
 			leafResourceName: 'petId',
 			getAllBaseFunc: getPetsFunc,
+			getItemLeafFunc: getItemPetsFunc,
 			putItemBaseFunc: putPetFunc,
-			deleteItemLeafFunc: putPetFunc,
+			deleteItemBaseFunc: deletePetFunc,
 		})
 
 		new cdk.CfnOutput(this, 'petsAPIURL', {

@@ -5,6 +5,7 @@ import { IFunction } from 'aws-cdk-lib/aws-lambda'
 type APIGatewayProps = {
 	getAllBaseFunc: IFunction
 	putItemBaseFunc: IFunction
+	deleteItemLeafFunc: IFunction
 	apiName: string
 	baseResourceName: string
 	leafResourceName: string
@@ -19,8 +20,11 @@ export const createCRUDAPIGateway = (
 	})
 
 	// Create the API resources
+	// /pets
 	const baseResource = api.root.addResource(props.baseResourceName)
-	// const leafResource = baseResource.addResource(`{${props.leafResourceName}}`)
+
+	// /pets/{petId}
+	const leafResource = baseResource.addResource(`{${props.leafResourceName}}`)
 
 	// Allow CORS for all methods on the API
 	baseResource.addCorsPreflight({
@@ -28,16 +32,18 @@ export const createCRUDAPIGateway = (
 		allowMethods: Cors.ALL_METHODS,
 	})
 
-	// leafResource.addCorsPreflight({
-	// 	allowOrigins: Cors.ALL_ORIGINS,
-	// 	allowMethods: Cors.ALL_METHODS,
-	// })
+	leafResource.addCorsPreflight({
+		allowOrigins: Cors.ALL_ORIGINS,
+		allowMethods: Cors.ALL_METHODS,
+	})
 
 	// Allow a user to GET all the pets via a Lambda function
 	const getAllBaseIntegration = new LambdaIntegration(props.getAllBaseFunc)
 	const putItemBaseIntegration = new LambdaIntegration(props.putItemBaseFunc)
+	const deleteItemLeafIntegration = new LambdaIntegration(props.putItemBaseFunc)
 	baseResource.addMethod('GET', getAllBaseIntegration)
 	baseResource.addMethod('POST', putItemBaseIntegration)
+	baseResource.addMethod('DELETE', deleteItemLeafIntegration)
 
 	return api
 }

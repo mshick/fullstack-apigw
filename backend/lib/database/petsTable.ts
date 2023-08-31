@@ -11,7 +11,7 @@ export const createPetsTable = (scope: Construct, props: PetsTableProps) => {
 		billingMode: BillingMode.PAY_PER_REQUEST,
 		removalPolicy: RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
 		partitionKey: {
-			name: 'owner',
+			name: 'id',
 			type: AttributeType.STRING,
 		},
 	})

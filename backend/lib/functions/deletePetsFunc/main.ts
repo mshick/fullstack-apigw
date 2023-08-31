@@ -22,7 +22,7 @@ async function deleteItem(id: string) {
 
 exports.handler = async (event: any) => {
 	// Assuming the ID is sent in the body as: { "id": "someValue" }
-	const { id } = JSON.parse(event.body)
+	const id = event.pathParameters?.petId
 
 	if (!id) {
 		return {

@@ -16,7 +16,7 @@ async function lambdaHandler(event: any): Promise<any> {
 
 	// Parse the body to get the item
 	const itemData = JSON.parse(event.body)
-	itemData.id ?? uuidv4()
+	itemData.id = itemData.id ?? uuidv4()
 
 	// Marshall the item data to match DynamoDB's format with a unique id
 	const marshalledItem = marshall(itemData)

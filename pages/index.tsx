@@ -17,12 +17,16 @@ export default function Home() {
 			.catch((err) => console.log(err))
 	}, [])
 
+	async function handlePetDelete(id: string) {
+		setPets(pets.filter((pet) => pet.id !== id))
+		await API.del('MyPetsAPI', `/pets`, { body: { id } })
+	}
 	return (
 		<main>
 			<h1>Pets</h1>
 			<ul>
 				{pets.map((pet) => (
-					<li key={pet.id}>{pet.name}</li>
+					<li onClick={() => handlePetDelete(pet.id)}>{pet.name}</li>
 				))}
 			</ul>
 		</main>

@@ -30,6 +30,10 @@ async function lambdaHandler(event: any): Promise<any> {
 		await client.send(new PutItemCommand(params))
 		return {
 			statusCode: 200,
+			headers: {
+				'Access-Control-Allow-Origin': '*',
+				'Access-Control-Allow-Credentials': true,
+			},
 			body: 'Item put successfully',
 		}
 	} catch (error) {

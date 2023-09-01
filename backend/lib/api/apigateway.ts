@@ -48,6 +48,7 @@ export const createCRUDAPIGateway = (
 
 	baseResource.addMethod('GET', getAllBaseIntegration)
 	baseResource.addMethod('POST', putItemBaseIntegration)
+	baseResource.addMethod('PUT', putItemBaseIntegration)
 	baseResource.addMethod('DELETE', deleteItemBaseIntegration)
 	leafResource.addMethod('GET', getItemLeafIntegration)
 

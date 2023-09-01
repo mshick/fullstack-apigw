@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { API } from 'aws-amplify'
+import Link from 'next/link'
 
 type Pet = {
 	id: string
@@ -21,14 +22,44 @@ export default function Home() {
 		setPets(pets.filter((pet) => pet.id !== id))
 		await API.del('MyPetsAPI', `/pets`, { body: { id } })
 	}
+
+	const handleCreatePetSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault()
+		const formData = new FormData(e.currentTarget)
+		const data = {
+			name: formData.get('name') as string,
+			type: formData.get('type') as string,
+		}
+		await API.post('MyPetsAPI', `/pets`, {
+			body: { name: data.name, type: data.type },
+		})
+
+		const target = e.target as HTMLFormElement
+		target.reset()
+	}
 	return (
 		<main>
 			<h1>Pets</h1>
 			<ul>
 				{pets.map((pet) => (
-					<li onClick={() => handlePetDelete(pet.id)}>{pet.name}</li>
+					<li>
+						<Link href={`/pets/${pet.id}`}>{pet.name} </Link>
+						<button onClick={() => handlePetDelete(pet.id)}>X</button>
+					</li>
 				))}
 			</ul>
+			<h2>Create a Pet</h2>
+			<form onSubmit={handleCreatePetSubmit}>
+				<label>
+					Name:
+					<input type="text" name="name" placeholder="new dog name" />
+				</label>
+				<label>
+					Type:
+					<input type="text" name="type" placeholder="new dog type" />
+				</label>
+				<button>Submit</button>
+			</form>
 		</main>
 	)
 }

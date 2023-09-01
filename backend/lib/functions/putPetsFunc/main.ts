@@ -6,14 +6,6 @@ import { v4 as uuidv4 } from 'uuid'
 const client = new DynamoDBClient()
 
 async function lambdaHandler(event: any): Promise<any> {
-	// Check if body is present in the event and is a string
-	if (typeof event.body !== 'string') {
-		return {
-			statusCode: 400,
-			body: 'Invalid input',
-		}
-	}
-
 	// Parse the body to get the item
 	const itemData = JSON.parse(event.body)
 	itemData.id = itemData.id ?? uuidv4()

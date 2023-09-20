@@ -5,7 +5,7 @@ const client = new DynamoDBClient()
 
 async function getItem(id: string) {
 	const params = {
-		TableName: process.env.PETS_TABLE_NAME,
+		TableName: process.env.BOOKS_TABLE_NAME,
 		Key: {
 			id: { S: id }, // Assuming id is the primary key and is of type string. Adjust if needed.
 		},
@@ -26,7 +26,7 @@ async function getItem(id: string) {
 
 exports.handler = async (event: any) => {
 	// Assuming the id is sent in the body as: { "id": "someValue" }
-	const id = event.pathParameters?.petId
+	const id = event.pathParameters?.bookId
 
 	if (!id) {
 		return {

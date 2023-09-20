@@ -4,7 +4,7 @@ const client = new DynamoDBClient()
 
 async function deleteItem(id: string) {
 	const params = {
-		TableName: process.env.PETS_TABLE_NAME,
+		TableName: process.env.BOOKS_TABLE_NAME,
 		Key: {
 			id: { S: id }, // Assuming ID is the primary key and is of type string. Adjust if needed.
 		},

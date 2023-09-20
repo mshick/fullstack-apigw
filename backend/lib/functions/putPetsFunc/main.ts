@@ -14,7 +14,7 @@ async function lambdaHandler(event: any): Promise<any> {
 	const marshalledItem = marshall(itemData)
 
 	const params = {
-		TableName: process.env.PETS_TABLE_NAME,
+		TableName: process.env.BOOKS_TABLE_NAME,
 		Item: marshalledItem,
 	}
 

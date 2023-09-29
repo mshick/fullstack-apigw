@@ -1,0 +1,28 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createGetPetsFunc = void 0;
+const aws_iam_1 = require("aws-cdk-lib/aws-iam");
+const aws_lambda_1 = require("aws-cdk-lib/aws-lambda");
+const path = require("path");
+const function_1 = require("../function");
+const createGetPetsFunc = (scope, props) => {
+    const appConfig = aws_lambda_1.LayerVersion.fromLayerVersionArn(scope, `my-first-app-config-layer`, 'arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:113');
+    const getPetsFunc = new function_1.NodeFunction(scope, `${props.functionName}`, {
+        functionName: `${props.functionName}`,
+        runtime: aws_lambda_1.Runtime.NODEJS_18_X,
+        handler: 'handler',
+        entry: path.join(__dirname, `./main.ts`),
+        environment: {
+            AWS_APPCONFIG_EXTENSION_PREFETCH_LIST: props.appconfigUri,
+            PETS_TABLE_NAME: props.enviornmentVars.petsTableName,
+        },
+        layers: []
+    });
+    getPetsFunc.addToRolePolicy(new aws_iam_1.PolicyStatement({
+        actions: ['dynamodb:Scan'],
+        resources: [props.petsTableArn],
+    }));
+    return getPetsFunc;
+};
+exports.createGetPetsFunc = createGetPetsFunc;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY29uc3RydWN0LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiY29uc3RydWN0LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUFBLGlEQUFxRDtBQUNyRCx1REFBOEQ7QUFFOUQsNkJBQTRCO0FBQzVCLDBDQUEwQztBQVduQyxNQUFNLGlCQUFpQixHQUFHLENBQ2hDLEtBQWdCLEVBQ2hCLEtBQXVCLEVBQ3RCLEVBQUU7SUFDSCxNQUFNLFNBQVMsR0FBRyx5QkFBWSxDQUFDLG1CQUFtQixDQUNqRCxLQUFLLEVBQ0wsMkJBQTJCLEVBQzNCLHlFQUF5RSxDQUN6RSxDQUFBO0lBRUQsTUFBTSxXQUFXLEdBQUcsSUFBSSx1QkFBWSxDQUFDLEtBQUssRUFBRSxHQUFHLEtBQUssQ0FBQyxZQUFZLEVBQUUsRUFBRTtRQUNwRSxZQUFZLEVBQUUsR0FBRyxLQUFLLENBQUMsWUFBWSxFQUFFO1FBQ3JDLE9BQU8sRUFBRSxvQkFBTyxDQUFDLFdBQVc7UUFDNUIsT0FBTyxFQUFFLFNBQVM7UUFDbEIsS0FBSyxFQUFFLElBQUksQ0FBQyxJQUFJLENBQUMsU0FBUyxFQUFFLFdBQVcsQ0FBQztRQUN4QyxXQUFXLEVBQUU7WUFDWixxQ0FBcUMsRUFBRSxLQUFLLENBQUMsWUFBWTtZQUN6RCxlQUFlLEVBQUUsS0FBSyxDQUFDLGVBQWUsQ0FBQyxhQUFhO1NBQ3BEO1FBQ0QsTUFBTSxFQUFFLEVBQUU7S0FDVixDQUFDLENBQUE7SUFFRixXQUFXLENBQUMsZUFBZSxDQUMxQixJQUFJLHlCQUFlLENBQUM7UUFDbkIsT0FBTyxFQUFFLENBQUMsZUFBZSxDQUFDO1FBQzFCLFNBQVMsRUFBRSxDQUFDLEtBQUssQ0FBQyxZQUFZLENBQUM7S0FDL0IsQ0FBQyxDQUNGLENBQUE7SUFFRCxPQUFPLFdBQVcsQ0FBQTtBQUNuQixDQUFDLENBQUE7QUE5QlksUUFBQSxpQkFBaUIscUJBOEI3QiIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IFBvbGljeVN0YXRlbWVudCB9IGZyb20gJ2F3cy1jZGstbGliL2F3cy1pYW0nXG5pbXBvcnQgeyBMYXllclZlcnNpb24sIFJ1bnRpbWUgfSBmcm9tICdhd3MtY2RrLWxpYi9hd3MtbGFtYmRhJ1xuaW1wb3J0IHsgQ29uc3RydWN0IH0gZnJvbSAnY29uc3RydWN0cydcbmltcG9ydCAqIGFzIHBhdGggZnJvbSAncGF0aCdcbmltcG9ydCB7IE5vZGVGdW5jdGlvbiB9IGZyb20gJy4uL2Z1bmN0aW9uJ1xuXG50eXBlIGdldFBldHNGdW5jUHJvcHMgPSB7XG5cdGZ1bmN0aW9uTmFtZTogc3RyaW5nXG5cdHBldHNUYWJsZUFybjogc3RyaW5nXG5cdGFwcGNvbmZpZ1VyaTogc3RyaW5nXG5cdGVudmlvcm5tZW50VmFyczogeyBcblx0XHRwZXRzVGFibGVOYW1lOiBzdHJpbmcgXG5cdH1cbn1cblxuZXhwb3J0IGNvbnN0IGNyZWF0ZUdldFBldHNGdW5jID0gKFxuXHRzY29wZTogQ29uc3RydWN0LFxuXHRwcm9wczogZ2V0UGV0c0Z1bmNQcm9wc1xuKSA9PiB7XG5cdGNvbnN0IGFwcENvbmZpZyA9IExheWVyVmVyc2lvbi5mcm9tTGF5ZXJWZXJzaW9uQXJuKFxuXHRcdHNjb3BlLFxuXHRcdGBteS1maXJzdC1hcHAtY29uZmlnLWxheWVyYCxcblx0XHQnYXJuOmF3czpsYW1iZGE6dXMtZWFzdC0xOjAyNzI1NTM4MzU0MjpsYXllcjpBV1MtQXBwQ29uZmlnLUV4dGVuc2lvbjoxMTMnLFxuXHQpXG5cblx0Y29uc3QgZ2V0UGV0c0Z1bmMgPSBuZXcgTm9kZUZ1bmN0aW9uKHNjb3BlLCBgJHtwcm9wcy5mdW5jdGlvbk5hbWV9YCwge1xuXHRcdGZ1bmN0aW9uTmFtZTogYCR7cHJvcHMuZnVuY3Rpb25OYW1lfWAsXG5cdFx0cnVudGltZTogUnVudGltZS5OT0RFSlNfMThfWCxcblx0XHRoYW5kbGVyOiAnaGFuZGxlcicsXG5cdFx0ZW50cnk6IHBhdGguam9pbihfX2Rpcm5hbWUsIGAuL21haW4udHNgKSxcblx0XHRlbnZpcm9ubWVudDoge1xuXHRcdFx0QVdTX0FQUENPTkZJR19FWFRFTlNJT05fUFJFRkVUQ0hfTElTVDogcHJvcHMuYXBwY29uZmlnVXJpLFxuXHRcdFx0UEVUU19UQUJMRV9OQU1FOiBwcm9wcy5lbnZpb3JubWVudFZhcnMucGV0c1RhYmxlTmFtZSxcblx0XHR9LFxuXHRcdGxheWVyczogW11cblx0fSlcblxuXHRnZXRQZXRzRnVuYy5hZGRUb1JvbGVQb2xpY3koXG5cdFx0bmV3IFBvbGljeVN0YXRlbWVudCh7XG5cdFx0XHRhY3Rpb25zOiBbJ2R5bmFtb2RiOlNjYW4nXSxcblx0XHRcdHJlc291cmNlczogW3Byb3BzLnBldHNUYWJsZUFybl0sXG5cdFx0fSlcblx0KVxuXG5cdHJldHVybiBnZXRQZXRzRnVuY1xufVxuIl19

@@ -1,0 +1,19 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createPetsTable = void 0;
+const aws_cdk_lib_1 = require("aws-cdk-lib");
+const aws_dynamodb_1 = require("aws-cdk-lib/aws-dynamodb");
+const createPetsTable = (scope, props) => {
+    const petsTable = new aws_dynamodb_1.Table(scope, props.tableName, {
+        tableName: props.tableName,
+        billingMode: aws_dynamodb_1.BillingMode.PAY_PER_REQUEST,
+        removalPolicy: aws_cdk_lib_1.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
+        partitionKey: {
+            name: 'id',
+            type: aws_dynamodb_1.AttributeType.STRING,
+        },
+    });
+    return petsTable;
+};
+exports.createPetsTable = createPetsTable;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGV0c1RhYmxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsicGV0c1RhYmxlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUFBLDZDQUEyQztBQUMzQywyREFBNEU7QUFNckUsTUFBTSxlQUFlLEdBQUcsQ0FBQyxLQUFnQixFQUFFLEtBQXFCLEVBQUUsRUFBRTtJQUMxRSxNQUFNLFNBQVMsR0FBRyxJQUFJLG9CQUFLLENBQUMsS0FBSyxFQUFFLEtBQUssQ0FBQyxTQUFTLEVBQUU7UUFDbkQsU0FBUyxFQUFFLEtBQUssQ0FBQyxTQUFTO1FBQzFCLFdBQVcsRUFBRSwwQkFBVyxDQUFDLGVBQWU7UUFDeEMsYUFBYSxFQUFFLDJCQUFhLENBQUMsMEJBQTBCO1FBQ3ZELFlBQVksRUFBRTtZQUNiLElBQUksRUFBRSxJQUFJO1lBQ1YsSUFBSSxFQUFFLDRCQUFhLENBQUMsTUFBTTtTQUMxQjtLQUNELENBQUMsQ0FBQTtJQUVGLE9BQU8sU0FBUyxDQUFBO0FBQ2pCLENBQUMsQ0FBQTtBQVpZLFFBQUEsZUFBZSxtQkFZM0IiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBSZW1vdmFsUG9saWN5IH0gZnJvbSAnYXdzLWNkay1saWInXG5pbXBvcnQgeyBBdHRyaWJ1dGVUeXBlLCBCaWxsaW5nTW9kZSwgVGFibGUgfSBmcm9tICdhd3MtY2RrLWxpYi9hd3MtZHluYW1vZGInXG5pbXBvcnQgeyBDb25zdHJ1Y3QgfSBmcm9tICdjb25zdHJ1Y3RzJ1xuXG50eXBlIFBldHNUYWJsZVByb3BzID0ge1xuXHR0YWJsZU5hbWU6IHN0cmluZ1xufVxuZXhwb3J0IGNvbnN0IGNyZWF0ZVBldHNUYWJsZSA9IChzY29wZTogQ29uc3RydWN0LCBwcm9wczogUGV0c1RhYmxlUHJvcHMpID0+IHtcblx0Y29uc3QgcGV0c1RhYmxlID0gbmV3IFRhYmxlKHNjb3BlLCBwcm9wcy50YWJsZU5hbWUsIHtcblx0XHR0YWJsZU5hbWU6IHByb3BzLnRhYmxlTmFtZSxcblx0XHRiaWxsaW5nTW9kZTogQmlsbGluZ01vZGUuUEFZX1BFUl9SRVFVRVNULFxuXHRcdHJlbW92YWxQb2xpY3k6IFJlbW92YWxQb2xpY3kuUkVUQUlOX09OX1VQREFURV9PUl9ERUxFVEUsXG5cdFx0cGFydGl0aW9uS2V5OiB7XG5cdFx0XHRuYW1lOiAnaWQnLFxuXHRcdFx0dHlwZTogQXR0cmlidXRlVHlwZS5TVFJJTkcsXG5cdFx0fSxcblx0fSlcblxuXHRyZXR1cm4gcGV0c1RhYmxlXG59XG4iXX0=

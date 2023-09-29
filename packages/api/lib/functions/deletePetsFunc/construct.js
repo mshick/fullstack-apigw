@@ -1,0 +1,25 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createDeletePetsFunc = void 0;
+const aws_iam_1 = require("aws-cdk-lib/aws-iam");
+const aws_lambda_1 = require("aws-cdk-lib/aws-lambda");
+const aws_lambda_nodejs_1 = require("aws-cdk-lib/aws-lambda-nodejs");
+const path = require("path");
+const createDeletePetsFunc = (scope, props) => {
+    const deletePetsFunc = new aws_lambda_nodejs_1.NodejsFunction(scope, `${props.functionName}`, {
+        functionName: `${props.functionName}`,
+        runtime: aws_lambda_1.Runtime.NODEJS_18_X,
+        handler: 'handler',
+        entry: path.join(__dirname, `./main.ts`),
+        environment: {
+            PETS_TABLE_NAME: props.enviornmentVars.petsTableName,
+        },
+    });
+    deletePetsFunc.addToRolePolicy(new aws_iam_1.PolicyStatement({
+        actions: ['dynamodb:DeleteItem'],
+        resources: [props.petsTableArn],
+    }));
+    return deletePetsFunc;
+};
+exports.createDeletePetsFunc = createDeletePetsFunc;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY29uc3RydWN0LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiY29uc3RydWN0LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUFBLGlEQUFxRDtBQUNyRCx1REFBZ0Q7QUFDaEQscUVBQThEO0FBRTlELDZCQUE0QjtBQVFyQixNQUFNLG9CQUFvQixHQUFHLENBQ25DLEtBQWdCLEVBQ2hCLEtBQTBCLEVBQ3pCLEVBQUU7SUFDSCxNQUFNLGNBQWMsR0FBRyxJQUFJLGtDQUFjLENBQUMsS0FBSyxFQUFFLEdBQUcsS0FBSyxDQUFDLFlBQVksRUFBRSxFQUFFO1FBQ3pFLFlBQVksRUFBRSxHQUFHLEtBQUssQ0FBQyxZQUFZLEVBQUU7UUFDckMsT0FBTyxFQUFFLG9CQUFPLENBQUMsV0FBVztRQUM1QixPQUFPLEVBQUUsU0FBUztRQUNsQixLQUFLLEVBQUUsSUFBSSxDQUFDLElBQUksQ0FBQyxTQUFTLEVBQUUsV0FBVyxDQUFDO1FBQ3hDLFdBQVcsRUFBRTtZQUNaLGVBQWUsRUFBRSxLQUFLLENBQUMsZUFBZSxDQUFDLGFBQWE7U0FDcEQ7S0FDRCxDQUFDLENBQUE7SUFFRixjQUFjLENBQUMsZUFBZSxDQUM3QixJQUFJLHlCQUFlLENBQUM7UUFDbkIsT0FBTyxFQUFFLENBQUMscUJBQXFCLENBQUM7UUFDaEMsU0FBUyxFQUFFLENBQUMsS0FBSyxDQUFDLFlBQVksQ0FBQztLQUMvQixDQUFDLENBQ0YsQ0FBQTtJQUVELE9BQU8sY0FBYyxDQUFBO0FBQ3RCLENBQUMsQ0FBQTtBQXRCWSxRQUFBLG9CQUFvQix3QkFzQmhDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgUG9saWN5U3RhdGVtZW50IH0gZnJvbSAnYXdzLWNkay1saWIvYXdzLWlhbSdcbmltcG9ydCB7IFJ1bnRpbWUgfSBmcm9tICdhd3MtY2RrLWxpYi9hd3MtbGFtYmRhJ1xuaW1wb3J0IHsgTm9kZWpzRnVuY3Rpb24gfSBmcm9tICdhd3MtY2RrLWxpYi9hd3MtbGFtYmRhLW5vZGVqcydcbmltcG9ydCB7IENvbnN0cnVjdCB9IGZyb20gJ2NvbnN0cnVjdHMnXG5pbXBvcnQgKiBhcyBwYXRoIGZyb20gJ3BhdGgnXG5cbnR5cGUgZGVsZXRlUGV0c0Z1bmNQcm9wcyA9IHtcblx0ZnVuY3Rpb25OYW1lOiBzdHJpbmdcblx0cGV0c1RhYmxlQXJuOiBzdHJpbmdcblx0ZW52aW9ybm1lbnRWYXJzOiB7IHBldHNUYWJsZU5hbWU6IHN0cmluZyB9XG59XG5cbmV4cG9ydCBjb25zdCBjcmVhdGVEZWxldGVQZXRzRnVuYyA9IChcblx0c2NvcGU6IENvbnN0cnVjdCxcblx0cHJvcHM6IGRlbGV0ZVBldHNGdW5jUHJvcHNcbikgPT4ge1xuXHRjb25zdCBkZWxldGVQZXRzRnVuYyA9IG5ldyBOb2RlanNGdW5jdGlvbihzY29wZSwgYCR7cHJvcHMuZnVuY3Rpb25OYW1lfWAsIHtcblx0XHRmdW5jdGlvbk5hbWU6IGAke3Byb3BzLmZ1bmN0aW9uTmFtZX1gLFxuXHRcdHJ1bnRpbWU6IFJ1bnRpbWUuTk9ERUpTXzE4X1gsXG5cdFx0aGFuZGxlcjogJ2hhbmRsZXInLFxuXHRcdGVudHJ5OiBwYXRoLmpvaW4oX19kaXJuYW1lLCBgLi9tYWluLnRzYCksXG5cdFx0ZW52aXJvbm1lbnQ6IHtcblx0XHRcdFBFVFNfVEFCTEVfTkFNRTogcHJvcHMuZW52aW9ybm1lbnRWYXJzLnBldHNUYWJsZU5hbWUsXG5cdFx0fSxcblx0fSlcblxuXHRkZWxldGVQZXRzRnVuYy5hZGRUb1JvbGVQb2xpY3koXG5cdFx0bmV3IFBvbGljeVN0YXRlbWVudCh7XG5cdFx0XHRhY3Rpb25zOiBbJ2R5bmFtb2RiOkRlbGV0ZUl0ZW0nXSxcblx0XHRcdHJlc291cmNlczogW3Byb3BzLnBldHNUYWJsZUFybl0sXG5cdFx0fSlcblx0KVxuXG5cdHJldHVybiBkZWxldGVQZXRzRnVuY1xufVxuIl19

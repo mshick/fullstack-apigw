@@ -1,0 +1,1290 @@
+{
+ "Resources": {
+  "MSAppStackApplication": {
+   "Type": "AWS::AppConfig::Application",
+   "Properties": {
+    "Name": "test"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/MSAppStack: Application"
+   }
+  },
+  "MSAppStackEnvironment": {
+   "Type": "AWS::AppConfig::Environment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MSAppStackApplication"
+    },
+    "Name": "default"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/MSAppStack: Environment"
+   }
+  },
+  "MSAppStackConfigurationProfile": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MSAppStackApplication"
+    },
+    "LocationUri": "hosted",
+    "Name": "config",
+    "Type": "AWS.Freeform"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/MSAppStack: ConfigurationProfile"
+   }
+  },
+  "MSAppStackConfigurationProfileVersion": {
+   "Type": "AWS::AppConfig::HostedConfigurationVersion",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MSAppStackApplication"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MSAppStackConfigurationProfile"
+    },
+    "Content": "{\"foo\":\"FOOBAR\"}",
+    "ContentType": "application/json"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/MSAppStack: ConfigurationProfileVersion"
+   }
+  },
+  "MSAppStack": {
+   "Type": "AWS::AppConfig::Deployment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MSAppStackApplication"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MSAppStackConfigurationProfile"
+    },
+    "ConfigurationVersion": {
+     "Ref": "MSAppStackConfigurationProfileVersion"
+    },
+    "DeploymentStrategyId": "AppConfig.AllAtOnce",
+    "EnvironmentId": {
+     "Ref": "MSAppStackEnvironment"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/MSAppStack"
+   }
+  },
+  "petTable17D9E201": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "petTable"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "RetainExceptOnCreate",
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petTable/Resource"
+   }
+  },
+  "getPetsFuncServiceRoleD0756680": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/getPetsFunc/ServiceRole/Resource"
+   }
+  },
+  "getPetsFuncServiceRoleDefaultPolicyAAC6146F": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "dynamodb:Scan",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "petTable17D9E201",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "getPetsFuncServiceRoleDefaultPolicyAAC6146F",
+    "Roles": [
+     {
+      "Ref": "getPetsFuncServiceRoleD0756680"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/getPetsFunc/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "getPetsFuncC5C0C724": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-590044319366-us-east-1",
+     "S3Key": "c8d191bb03891f2862ce0259f42ff011b721cff79d85009c4b354bc8890e1528.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_APPCONFIG_EXTENSION_PREFETCH_LIST": {
+       "Fn::Sub": [
+        "/applications/${applicationId}/environments/${environmentId}/configurations/${configurationId}",
+        {
+         "applicationId": {
+          "Ref": "MSAppStackApplication"
+         },
+         "environmentId": {
+          "Ref": "MSAppStackEnvironment"
+         },
+         "configurationId": {
+          "Ref": "MSAppStackConfigurationProfile"
+         }
+        }
+       ]
+      },
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+      "NODE_OPTIONS": "--enable-source-maps",
+      "PETS_TABLE_NAME": {
+       "Ref": "petTable17D9E201"
+      }
+     }
+    },
+    "FunctionName": "getPetsFunc",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "getPetsFuncServiceRoleD0756680",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 300,
+    "TracingConfig": {
+     "Mode": "Active"
+    }
+   },
+   "DependsOn": [
+    "getPetsFuncServiceRoleDefaultPolicyAAC6146F",
+    "getPetsFuncServiceRoleD0756680"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/getPetsFunc/Resource",
+    "aws:asset:path": "asset.c8d191bb03891f2862ce0259f42ff011b721cff79d85009c4b354bc8890e1528",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "getPetsFuncCurrentVersionFEB087BD179677a40e62417de8c176abf5724d78": {
+   "Type": "AWS::Lambda::Version",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "getPetsFuncC5C0C724"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/getPetsFunc/CurrentVersion/Resource"
+   }
+  },
+  "getPetsFuncgetPetsFuncalias9F1B46DE": {
+   "Type": "AWS::Lambda::Alias",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "getPetsFuncC5C0C724"
+    },
+    "FunctionVersion": {
+     "Fn::GetAtt": [
+      "getPetsFuncCurrentVersionFEB087BD179677a40e62417de8c176abf5724d78",
+      "Version"
+     ]
+    },
+    "Name": "current"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/getPetsFunc/getPetsFuncalias/Resource"
+   }
+  },
+  "getItemPetsFuncServiceRoleB4E20D13": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/getItemPetsFunc/ServiceRole/Resource"
+   }
+  },
+  "getItemPetsFuncServiceRoleDefaultPolicy369C21ED": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "dynamodb:GetItem",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "petTable17D9E201",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "getItemPetsFuncServiceRoleDefaultPolicy369C21ED",
+    "Roles": [
+     {
+      "Ref": "getItemPetsFuncServiceRoleB4E20D13"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/getItemPetsFunc/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "getItemPetsFunc8CCCB9E0": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-590044319366-us-east-1",
+     "S3Key": "8851782d1b3c84aa47091c8184db4aa12901f940302b041d5d1be8f73286d121.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "PETS_TABLE_NAME": {
+       "Ref": "petTable17D9E201"
+      },
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "getItemPetsFunc",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "getItemPetsFuncServiceRoleB4E20D13",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "getItemPetsFuncServiceRoleDefaultPolicy369C21ED",
+    "getItemPetsFuncServiceRoleB4E20D13"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/getItemPetsFunc/Resource",
+    "aws:asset:path": "asset.8851782d1b3c84aa47091c8184db4aa12901f940302b041d5d1be8f73286d121",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "putPetFuncServiceRoleAA0603B6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/putPetFunc/ServiceRole/Resource"
+   }
+  },
+  "putPetFuncServiceRoleDefaultPolicy9A7B778D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "petTable17D9E201",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "putPetFuncServiceRoleDefaultPolicy9A7B778D",
+    "Roles": [
+     {
+      "Ref": "putPetFuncServiceRoleAA0603B6"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/putPetFunc/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "putPetFunc59896E54": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-590044319366-us-east-1",
+     "S3Key": "1d8e9c2a83c8834b8edfe31523822937ee2331b53dc20864928707bb01d86a7e.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "PETS_TABLE_NAME": {
+       "Ref": "petTable17D9E201"
+      },
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "putPetFunc",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "putPetFuncServiceRoleAA0603B6",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "putPetFuncServiceRoleDefaultPolicy9A7B778D",
+    "putPetFuncServiceRoleAA0603B6"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/putPetFunc/Resource",
+    "aws:asset:path": "asset.1d8e9c2a83c8834b8edfe31523822937ee2331b53dc20864928707bb01d86a7e",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "deletePetFuncServiceRole68F361BB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/deletePetFunc/ServiceRole/Resource"
+   }
+  },
+  "deletePetFuncServiceRoleDefaultPolicy712CF1A2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "dynamodb:DeleteItem",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "petTable17D9E201",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "deletePetFuncServiceRoleDefaultPolicy712CF1A2",
+    "Roles": [
+     {
+      "Ref": "deletePetFuncServiceRole68F361BB"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/deletePetFunc/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "deletePetFunc1F7670BF": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-590044319366-us-east-1",
+     "S3Key": "d6102057544ff41a8fd9a53e99331aa0eebb41483bcf07d2829d4775fad1e0f7.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "PETS_TABLE_NAME": {
+       "Ref": "petTable17D9E201"
+      },
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "deletePetFunc",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "deletePetFuncServiceRole68F361BB",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "deletePetFuncServiceRoleDefaultPolicy712CF1A2",
+    "deletePetFuncServiceRole68F361BB"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/deletePetFunc/Resource",
+    "aws:asset:path": "asset.d6102057544ff41a8fd9a53e99331aa0eebb41483bcf07d2829d4775fad1e0f7",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "petsAPID03D0AB7": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "petsAPI"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Resource"
+   }
+  },
+  "petsAPIDeploymentB7D0AA11c78506bb47ae9972133f7504cd20bedc": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "petsAPID03D0AB7"
+    }
+   },
+   "DependsOn": [
+    "petsAPIpetspetIdGETE8DD3B2B",
+    "petsAPIpetspetIdOPTIONS2BCCF877",
+    "petsAPIpetspetId04BCAED9",
+    "petsAPIpetsDELETE3238B82E",
+    "petsAPIpetsGET5C1EFD24",
+    "petsAPIpetsOPTIONS99CB6324",
+    "petsAPIpetsPOSTCFBEE97F",
+    "petsAPIpetsPUT1DE142EC",
+    "petsAPIpetsAC8A9BA0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Deployment/Resource"
+   }
+  },
+  "petsAPIDeploymentStageprod3FF3D4F9": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "petsAPIDeploymentB7D0AA11c78506bb47ae9972133f7504cd20bedc"
+    },
+    "RestApiId": {
+     "Ref": "petsAPID03D0AB7"
+    },
+    "StageName": "prod"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/DeploymentStage.prod/Resource"
+   }
+  },
+  "petsAPIpetsAC8A9BA0": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "petsAPID03D0AB7",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "pets",
+    "RestApiId": {
+     "Ref": "petsAPID03D0AB7"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/Resource"
+   }
+  },
+  "petsAPIpetspetId04BCAED9": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "petsAPIpetsAC8A9BA0"
+    },
+    "PathPart": "{petId}",
+    "RestApiId": {
+     "Ref": "petsAPID03D0AB7"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/{petId}/Resource"
+   }
+  },
+  "petsAPIpetspetIdOPTIONS2BCCF877": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "petsAPIpetspetId04BCAED9"
+    },
+    "RestApiId": {
+     "Ref": "petsAPID03D0AB7"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/{petId}/OPTIONS/Resource"
+   }
+  },
+  "petsAPIpetspetIdGETApiPermissionMSAppStackpetsAPIAF119FA4GETpetspetId5596FCFE": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "getItemPetsFunc8CCCB9E0",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:590044319366:",
+       {
+        "Ref": "petsAPID03D0AB7"
+       },
+       "/",
+       {
+        "Ref": "petsAPIDeploymentStageprod3FF3D4F9"
+       },
+       "/GET/pets/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/{petId}/GET/ApiPermission.MSAppStackpetsAPIAF119FA4.GET..pets.{petId}"
+   }
+  },
+  "petsAPIpetspetIdGETApiPermissionTestMSAppStackpetsAPIAF119FA4GETpetspetIdDE5A6D26": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "getItemPetsFunc8CCCB9E0",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:590044319366:",
+       {
+        "Ref": "petsAPID03D0AB7"
+       },
+       "/test-invoke-stage/GET/pets/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/{petId}/GET/ApiPermission.Test.MSAppStackpetsAPIAF119FA4.GET..pets.{petId}"
+   }
+  },
+  "petsAPIpetspetIdGETE8DD3B2B": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "getItemPetsFunc8CCCB9E0",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "petsAPIpetspetId04BCAED9"
+    },
+    "RestApiId": {
+     "Ref": "petsAPID03D0AB7"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/{petId}/GET/Resource"
+   }
+  },
+  "petsAPIpetsOPTIONS99CB6324": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "petsAPIpetsAC8A9BA0"
+    },
+    "RestApiId": {
+     "Ref": "petsAPID03D0AB7"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/OPTIONS/Resource"
+   }
+  },
+  "petsAPIpetsGETApiPermissionMSAppStackpetsAPIAF119FA4GETpetsA949D3B8": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "getPetsFuncC5C0C724",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:590044319366:",
+       {
+        "Ref": "petsAPID03D0AB7"
+       },
+       "/",
+       {
+        "Ref": "petsAPIDeploymentStageprod3FF3D4F9"
+       },
+       "/GET/pets"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/GET/ApiPermission.MSAppStackpetsAPIAF119FA4.GET..pets"
+   }
+  },
+  "petsAPIpetsGETApiPermissionTestMSAppStackpetsAPIAF119FA4GETpets1466A72C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "getPetsFuncC5C0C724",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:590044319366:",
+       {
+        "Ref": "petsAPID03D0AB7"
+       },
+       "/test-invoke-stage/GET/pets"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/GET/ApiPermission.Test.MSAppStackpetsAPIAF119FA4.GET..pets"
+   }
+  },
+  "petsAPIpetsGET5C1EFD24": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "getPetsFuncC5C0C724",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "petsAPIpetsAC8A9BA0"
+    },
+    "RestApiId": {
+     "Ref": "petsAPID03D0AB7"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/GET/Resource"
+   }
+  },
+  "petsAPIpetsPOSTApiPermissionMSAppStackpetsAPIAF119FA4POSTpets924E02D1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "putPetFunc59896E54",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:590044319366:",
+       {
+        "Ref": "petsAPID03D0AB7"
+       },
+       "/",
+       {
+        "Ref": "petsAPIDeploymentStageprod3FF3D4F9"
+       },
+       "/POST/pets"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/POST/ApiPermission.MSAppStackpetsAPIAF119FA4.POST..pets"
+   }
+  },
+  "petsAPIpetsPOSTApiPermissionTestMSAppStackpetsAPIAF119FA4POSTpetsAD4DA2FF": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "putPetFunc59896E54",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:590044319366:",
+       {
+        "Ref": "petsAPID03D0AB7"
+       },
+       "/test-invoke-stage/POST/pets"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/POST/ApiPermission.Test.MSAppStackpetsAPIAF119FA4.POST..pets"
+   }
+  },
+  "petsAPIpetsPOSTCFBEE97F": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "putPetFunc59896E54",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "petsAPIpetsAC8A9BA0"
+    },
+    "RestApiId": {
+     "Ref": "petsAPID03D0AB7"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/POST/Resource"
+   }
+  },
+  "petsAPIpetsPUTApiPermissionMSAppStackpetsAPIAF119FA4PUTpetsACC4A4F1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "putPetFunc59896E54",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:590044319366:",
+       {
+        "Ref": "petsAPID03D0AB7"
+       },
+       "/",
+       {
+        "Ref": "petsAPIDeploymentStageprod3FF3D4F9"
+       },
+       "/PUT/pets"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/PUT/ApiPermission.MSAppStackpetsAPIAF119FA4.PUT..pets"
+   }
+  },
+  "petsAPIpetsPUTApiPermissionTestMSAppStackpetsAPIAF119FA4PUTpetsA0787620": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "putPetFunc59896E54",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:590044319366:",
+       {
+        "Ref": "petsAPID03D0AB7"
+       },
+       "/test-invoke-stage/PUT/pets"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/PUT/ApiPermission.Test.MSAppStackpetsAPIAF119FA4.PUT..pets"
+   }
+  },
+  "petsAPIpetsPUT1DE142EC": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "PUT",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "putPetFunc59896E54",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "petsAPIpetsAC8A9BA0"
+    },
+    "RestApiId": {
+     "Ref": "petsAPID03D0AB7"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/PUT/Resource"
+   }
+  },
+  "petsAPIpetsDELETEApiPermissionMSAppStackpetsAPIAF119FA4DELETEpets46403358": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "deletePetFunc1F7670BF",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:590044319366:",
+       {
+        "Ref": "petsAPID03D0AB7"
+       },
+       "/",
+       {
+        "Ref": "petsAPIDeploymentStageprod3FF3D4F9"
+       },
+       "/DELETE/pets"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/DELETE/ApiPermission.MSAppStackpetsAPIAF119FA4.DELETE..pets"
+   }
+  },
+  "petsAPIpetsDELETEApiPermissionTestMSAppStackpetsAPIAF119FA4DELETEpets775E4978": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "deletePetFunc1F7670BF",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:590044319366:",
+       {
+        "Ref": "petsAPID03D0AB7"
+       },
+       "/test-invoke-stage/DELETE/pets"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/DELETE/ApiPermission.Test.MSAppStackpetsAPIAF119FA4.DELETE..pets"
+   }
+  },
+  "petsAPIpetsDELETE3238B82E": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "DELETE",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "deletePetFunc1F7670BF",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "petsAPIpetsAC8A9BA0"
+    },
+    "RestApiId": {
+     "Ref": "petsAPID03D0AB7"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/petsAPI/Default/pets/DELETE/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1VRTU8CMRD9Ld5LFU2MHBfUeFEJGq9kaId1YLdt+gHZbPa/248F4TTvvZl5edPe89mM393A0U2E3E8a2vD+y4PYsyitezBGaLWlmveLraqMaUiAJ61YpC/qQFarFpVPdJEHg839pdVbajDpb9p5lFfdH7RuNHlG0+gueQxMdgpaLWOEb9iU5QwG1kC7kbBWWuLO8Y9cXoMSOQpBy/uVLgu5LnXM2SVa0MDcwxqcQ+94lUrkfB7EHv0cHI72+caz60XGE6waApeEM1iibcml5sDAUA0ej9DFNOh8ZSgHGuH/oddns/jcdY5eQJzXwQrMwU5kNCr4Hf2vlkkqaBj+5/J1yYhUnSY+gzfBX64PLL0i37nbw/SJTx/j7+8c0cQG5alFvir1D/e1sq4ZAgAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MSAppStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "petsAPIEndpointB83F11FF": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "petsAPID03D0AB7"
+      },
+      ".execute-api.us-east-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "petsAPIDeploymentStageprod3FF3D4F9"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "petsAPIURL": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "petsAPID03D0AB7"
+      },
+      ".execute-api.us-east-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "petsAPIDeploymentStageprod3FF3D4F9"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

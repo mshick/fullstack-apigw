@@ -1,0 +1,337 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "MSAppStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MSAppStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MSAppStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://590044319366/us-east-1",
+      "properties": {
+        "templateFile": "MSAppStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::590044319366:role/cdk-hnb659fds-deploy-role-590044319366-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::590044319366:role/cdk-hnb659fds-cfn-exec-role-590044319366-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-590044319366-us-east-1/9e96ab345357103b0f99a30e2d0835dde55d4993bb31d15b6d003d7754a4b9ed.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MSAppStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::590044319366:role/cdk-hnb659fds-lookup-role-590044319366-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "MSAppStack.assets"
+      ],
+      "metadata": {
+        "/MSAppStack/MSAppStack: Application": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MSAppStackApplication"
+          }
+        ],
+        "/MSAppStack/MSAppStack: Environment": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MSAppStackEnvironment"
+          }
+        ],
+        "/MSAppStack/MSAppStack: ConfigurationProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MSAppStackConfigurationProfile"
+          }
+        ],
+        "/MSAppStack/MSAppStack: ConfigurationProfileVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MSAppStackConfigurationProfileVersion"
+          }
+        ],
+        "/MSAppStack/MSAppStack": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MSAppStack"
+          }
+        ],
+        "/MSAppStack/petTable": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "petTable17D9E201"
+            }
+          }
+        ],
+        "/MSAppStack/petTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petTable17D9E201"
+          }
+        ],
+        "/MSAppStack/getPetsFunc/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getPetsFuncServiceRoleD0756680"
+          }
+        ],
+        "/MSAppStack/getPetsFunc/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getPetsFuncServiceRoleDefaultPolicyAAC6146F"
+          }
+        ],
+        "/MSAppStack/getPetsFunc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getPetsFuncC5C0C724"
+          }
+        ],
+        "/MSAppStack/getPetsFunc/CurrentVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getPetsFuncCurrentVersionFEB087BD179677a40e62417de8c176abf5724d78"
+          }
+        ],
+        "/MSAppStack/getPetsFunc/getPetsFuncalias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getPetsFuncgetPetsFuncalias9F1B46DE"
+          }
+        ],
+        "/MSAppStack/getItemPetsFunc/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getItemPetsFuncServiceRoleB4E20D13"
+          }
+        ],
+        "/MSAppStack/getItemPetsFunc/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getItemPetsFuncServiceRoleDefaultPolicy369C21ED"
+          }
+        ],
+        "/MSAppStack/getItemPetsFunc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getItemPetsFunc8CCCB9E0"
+          }
+        ],
+        "/MSAppStack/putPetFunc/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "putPetFuncServiceRoleAA0603B6"
+          }
+        ],
+        "/MSAppStack/putPetFunc/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "putPetFuncServiceRoleDefaultPolicy9A7B778D"
+          }
+        ],
+        "/MSAppStack/putPetFunc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "putPetFunc59896E54"
+          }
+        ],
+        "/MSAppStack/deletePetFunc/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deletePetFuncServiceRole68F361BB"
+          }
+        ],
+        "/MSAppStack/deletePetFunc/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deletePetFuncServiceRoleDefaultPolicy712CF1A2"
+          }
+        ],
+        "/MSAppStack/deletePetFunc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deletePetFunc1F7670BF"
+          }
+        ],
+        "/MSAppStack/petsAPI/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPID03D0AB7"
+          }
+        ],
+        "/MSAppStack/petsAPI/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIDeploymentB7D0AA11c78506bb47ae9972133f7504cd20bedc"
+          }
+        ],
+        "/MSAppStack/petsAPI/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIDeploymentStageprod3FF3D4F9"
+          }
+        ],
+        "/MSAppStack/petsAPI/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIEndpointB83F11FF"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetsAC8A9BA0"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/{petId}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetspetId04BCAED9"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/{petId}/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetspetIdOPTIONS2BCCF877"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/{petId}/GET/ApiPermission.MSAppStackpetsAPIAF119FA4.GET..pets.{petId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetspetIdGETApiPermissionMSAppStackpetsAPIAF119FA4GETpetspetId5596FCFE"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/{petId}/GET/ApiPermission.Test.MSAppStackpetsAPIAF119FA4.GET..pets.{petId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetspetIdGETApiPermissionTestMSAppStackpetsAPIAF119FA4GETpetspetIdDE5A6D26"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/{petId}/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetspetIdGETE8DD3B2B"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetsOPTIONS99CB6324"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/GET/ApiPermission.MSAppStackpetsAPIAF119FA4.GET..pets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetsGETApiPermissionMSAppStackpetsAPIAF119FA4GETpetsA949D3B8"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/GET/ApiPermission.Test.MSAppStackpetsAPIAF119FA4.GET..pets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetsGETApiPermissionTestMSAppStackpetsAPIAF119FA4GETpets1466A72C"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetsGET5C1EFD24"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/POST/ApiPermission.MSAppStackpetsAPIAF119FA4.POST..pets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetsPOSTApiPermissionMSAppStackpetsAPIAF119FA4POSTpets924E02D1"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/POST/ApiPermission.Test.MSAppStackpetsAPIAF119FA4.POST..pets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetsPOSTApiPermissionTestMSAppStackpetsAPIAF119FA4POSTpetsAD4DA2FF"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetsPOSTCFBEE97F"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/PUT/ApiPermission.MSAppStackpetsAPIAF119FA4.PUT..pets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetsPUTApiPermissionMSAppStackpetsAPIAF119FA4PUTpetsACC4A4F1"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/PUT/ApiPermission.Test.MSAppStackpetsAPIAF119FA4.PUT..pets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetsPUTApiPermissionTestMSAppStackpetsAPIAF119FA4PUTpetsA0787620"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/PUT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetsPUT1DE142EC"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/DELETE/ApiPermission.MSAppStackpetsAPIAF119FA4.DELETE..pets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetsDELETEApiPermissionMSAppStackpetsAPIAF119FA4DELETEpets46403358"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/DELETE/ApiPermission.Test.MSAppStackpetsAPIAF119FA4.DELETE..pets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetsDELETEApiPermissionTestMSAppStackpetsAPIAF119FA4DELETEpets775E4978"
+          }
+        ],
+        "/MSAppStack/petsAPI/Default/pets/DELETE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIpetsDELETE3238B82E"
+          }
+        ],
+        "/MSAppStack/petsAPIURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "petsAPIURL"
+          }
+        ],
+        "/MSAppStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/MSAppStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/MSAppStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "MSAppStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
